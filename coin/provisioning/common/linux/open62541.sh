@@ -35,6 +35,8 @@
 
 set +e
 
+# shellcheck disable=SC1090
+
 # We need to source to be able to use cmake in the shell
 if uname -a |grep -q "Ubuntu"; then
     source ~/.profile
@@ -44,20 +46,28 @@ fi
 
 set -ex
 
+# shellcheck source=../unix/SetEnvVar.sh
+source "${BASH_SOURCE%/*}/../unix/SetEnvVar.sh"
+
 TEMPDIR=$(mktemp --directory) || echo "Failed to create temporary directory"
+# shellcheck disable=SC2064
 trap "sudo rm -fr $TEMPDIR" EXIT
-cd $TEMPDIR
+cd "$TEMPDIR"
 
 sudo pip install --upgrade pip
 sudo pip install six
 
 git clone https://github.com/open62541/open62541.git open62541
 cd open62541
-git checkout 302003d2448946fa4d8a02cc209b8931d31e975b
+git checkout 8845e493d7751fd4eee3917b540e5346646b9cf7
 mkdir build
 cd build
-cmake -DUA_ENABLE_AMALGAMATION=ON -DUA_ENABLE_METHODCALLS=ON -DCMAKE_INSTALL_PREFIX:PATH=/usr/local -DLIB_INSTALL_DIR:PATH=/usr/local/lib ..
+cmake -DUA_ENABLE_AMALGAMATION=ON -DUA_ENABLE_METHODCALLS=ON -DCMAKE_INSTALL_PREFIX:PATH=/usr/local -DLIB_INSTALL_DIR:PATH=/usr/local/lib/open62541 ..
 make
 
 sudo make install
 sudo /sbin/ldconfig
+
+SetEnvVar "QTOPCUA_OPEN62541_LIB_PATH" "/usr/local/lib/open62541"
+SetEnvVar "QTOPCUA_OPEN62541_INCLUDE_PATH" "/usr/local/include/open62541"
+

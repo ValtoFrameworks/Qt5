@@ -33,18 +33,19 @@
 
 . "$PSScriptRoot\helpers.ps1"
 
-echo "MQTT: Downloading Paho test broker..."
-$zip = "c:\users\qt\downloads\pahotest.zip"
-$externalUrl = "http://ci-files01-hki.ci.local/input/mqtt_broker/paho.mqtt.testing-c342c09dadc7a664d0a8befad1ca031f5a0b0bc0.zip"
-$internalUrl = "https://github.com/eclipse/paho.mqtt.testing/archive/c342c09dadc7a664d0a8befad1ca031f5a0b0bc0.zip"
-$sha1 = "532fe145096cdd8d679f425cbfd883289150c968"
+Write-Host "MQTT: Downloading Paho test broker..."
+$zip = Get-DownloadLocation "pahotest.zip"
+$commitSHA = "5e14a65bbf602fe5d58afdd1394ce76d41ed5c65"
+$sha1 = "6afc375c2702eb36a960f38dd4912a3422d679fd"
+
+$internalUrl = "http://ci-files01-hki.ci.local/input/mqtt_broker/paho.mqtt.testing-$commitSHA.zip"
+$externalUrl = "https://github.com/eclipse/paho.mqtt.testing/archive/$commitSHA.zip"
 
 Download $externalUrl $internalUrl $zip
 Verify-Checksum $zip $sha1
 
-echo "MQTT: Installing $zip..."
-Extract-Zip $zip C:\Utils
-Remove-Item $zip
+Write-Host "MQTT: Installing $zip..."
+Extract-7Zip $zip C:\Utils
+Remove-Item -Path $zip
 
-echo "MQTT: Updating environment..."
-[Environment]::SetEnvironmentVariable("MQTT_TEST_BROKER_LOCATION", "C:\Utils\paho.mqtt.testing-c342c09dadc7a664d0a8befad1ca031f5a0b0bc0\interoperability\startbroker.py", "Machine")
+Set-EnvironmentVariable "MQTT_TEST_BROKER_LOCATION" "C:\Utils\paho.mqtt.testing-$commitSHA\interoperability\startbroker.py"

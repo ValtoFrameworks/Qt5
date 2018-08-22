@@ -143,13 +143,6 @@
 	url = ../qtimageformats.git
 	branch = 5.11
 	status = addon
-[submodule "qtquick1"]
-	depends = qtscript
-	recommends = qtsvg qtxmlpatterns
-	path = qtquick1
-	url = ../qtquick1.git
-	branch = dev
-	status = ignore
 [submodule "qtgraphicaleffects"]
 	depends = qtdeclarative
 	path = qtgraphicaleffects
@@ -249,8 +242,8 @@
 	branch = 5.11
 	status = addon
 [submodule "qtpurchasing"]
-	depends = qtbase qtandroidextras
-	recommends = qtdeclarative
+	depends = qtbase
+	recommends = qtdeclarative qtandroidextras
 	path = qtpurchasing
 	url = ../qtpurchasing.git
 	branch = 5.11
