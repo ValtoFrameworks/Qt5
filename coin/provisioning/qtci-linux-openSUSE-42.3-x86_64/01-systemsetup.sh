@@ -10,14 +10,23 @@ source "${BASH_SOURCE%/*}/../common/unix/check_and_set_proxy.sh"
 
 sed -i '$ a\[Daemon\]\nAutolock=false\nLockOnResume=false' ~/.config/kscreenlockerrc
 
+sudo sed -i 's|GRUB_TIMEOUT=8|GRUB_TIMEOUT=0|g' /etc/default/grub
+sudo grub2-mkconfig -o /boot/grub2/grub.cfg
+
 echo "Set Network Test Server address to $network_test_server_ip in /etc/hosts"
 echo "$network_test_server_ip    qt-test-server qt-test-server.qt-test-net" | sudo tee -a /etc/hosts
 echo "Set DISPLAY"
 echo 'export DISPLAY=":0"' >> ~/.bashrc
 echo "Disabling file indexing."
 sudo balooctl disable
-echo "Disable update notifications"
+
+while sudo fuser /usr/lib/packagekitd >/dev/null 2>&1 ; do
+    echo "Waiting for PackageKit to finish..."
+    sleep 0.5
+done
+echo "Disabling update notifications"
 sudo zypper -nq remove plasma5-pk-updates
+
 
 # shellcheck disable=SC2031
 if [ "$http_proxy" != "" ]; then
